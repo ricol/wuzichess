@@ -113,6 +113,8 @@ begin
   FPaintBox := PaintBox;
   FLenX := PaintBox.ClientWidth div FSize;
   FLenY := PaintBox.ClientHeight div FSize;
+  FOldAvailableMoveData := TListOfPoints.Create;
+  FAvailableMoveData := TListOfPoints.Create;
 end;
 
 constructor TBoardGame.Create(boardGame: TBoardGame);
@@ -141,6 +143,8 @@ begin
   FSoundEffect_Click := boardGame.FSoundEffect_Click;
   FBackgroundColor := boardGame.FBackgroundColor;
   FDifficulty := boardGame.FDifficulty;
+  FOldAvailableMoveData := TListOfPoints.Create;
+  FAvailableMoveData := TListOfPoints.Create;
 end;
 
 destructor TBoardGame.Destroy;

@@ -71,6 +71,7 @@ var
   tmpGameCurrent: TWuziChessGame;
   tmpMax, k, l, tmpNumberOfBlack, tmpNumberOfWhite, tmpResult: Integer;
   tmpPoint: TPoint;
+  tmpI, tmpJ: Integer;
 begin
   //analyze the state tree and find the optimum node
   tmpStateTree := stateTree;
@@ -79,6 +80,14 @@ begin
   tmpMax := 0;
   l := 0;
   OutputDebugString(PChar(Format('Analyzing...Total Leaves: %d', [tmpAllLeaves.Count])));
+
+  repeat
+    tmpI := random(NUMBER);
+    tmpJ := random(NUMBER);
+  until self.GetPiece(tmpI, tmpJ) = PIECE_BLANK;
+  Result.X := tmpI;
+  Result.Y := tmpJ;
+  exit;
 
   if turn = WHITE then
   begin
@@ -211,23 +220,23 @@ end;
 
 function TWuziChessGame.AutoPlay(var i, j: Integer; piece: TPiece;
   way: TWay): Boolean;
-var
-  tmpI, tmpJ: Integer;
+//var
+//  tmpI, tmpJ: Integer;
 begin
-  Result := Self.GetPiecesNumber(PIECE_BLANK) > 0;
-  if Result then
-  begin
-    repeat
-      tmpI := random(NUMBER);
-      tmpJ := random(NUMBER);
-    until self.GetPiece(tmpI, tmpJ) = PIECE_BLANK;
-    i := tmpI;
-    j := tmpJ;
-  end;
-//  if way = LOOP then
-//    Result := self.GoToLevel(i, j, piece)
-//  else
-//    Result := self.AnalyzeToLevel(GComputerCalculateLevel, i, j, piece);
+//  Result := Self.GetPiecesNumber(PIECE_BLANK) > 0;
+//  if Result then
+//  begin
+//    repeat
+//      tmpI := random(NUMBER);
+//      tmpJ := random(NUMBER);
+//    until self.GetPiece(tmpI, tmpJ) = PIECE_BLANK;
+//    i := tmpI;
+//    j := tmpJ;
+//  end;
+  if way = LOOP then
+    Result := self.GoToLevel(i, j, piece)
+  else
+    Result := self.AnalyzeToLevel(GComputerCalculateLevel, i, j, piece);
 end;
 
 procedure TWuziChessGame.BlinkLastMove;
@@ -257,21 +266,25 @@ var
   tmpGame: TWuziChessGame;
 begin
   inherited Create(wuziChess);
-  tmpGame := TWuziChessGame(wuziChess);
-  FGridColor := tmpGame.FGridColor;
-  FBlackColor := tmpGame.FBlackColor;
-  FWhiteColor := tmpGame.FWhiteColor;
-  FTurn := tmpGame.FTurn;
-  FLastMove := tmpGame.FLastMove;
-  FOldLastMove := tmpGame.FOldLastMove;
-  FOldAvailableMoveNumber := tmpGame.FOldAvailableMoveNumber;
-  if not FIsTempGame then
+  if wuziChess is TWuziChessGame then
   begin
-    FOldAvailableMoveData := TListOfPoints.Create(tmpGame.FOldAvailableMoveData);
-    FAvailableMoveData := TListOfPoints.Create(tmpGame.FAvailableMoveData);
-  end;
-  FProgressBar := tmpGame.FProgressBar;
-  FListBox := tmpGame.FListBox;
+    tmpGame := TWuziChessGame(wuziChess);
+    FGridColor := tmpGame.FGridColor;
+    FBlackColor := tmpGame.FBlackColor;
+    FWhiteColor := tmpGame.FWhiteColor;
+    FTurn := tmpGame.FTurn;
+    FLastMove := tmpGame.FLastMove;
+    FOldLastMove := tmpGame.FOldLastMove;
+    FOldAvailableMoveNumber := tmpGame.FOldAvailableMoveNumber;
+    if not FIsTempGame then
+    begin
+      FOldAvailableMoveData := TListOfPoints.Create(tmpGame.FOldAvailableMoveData);
+      FAvailableMoveData := TListOfPoints.Create(tmpGame.FAvailableMoveData);
+    end;
+    FProgressBar := tmpGame.FProgressBar;
+    FListBox := tmpGame.FListBox;
+  end else
+    OutputDebugString('Error!');
 end;
 
 
