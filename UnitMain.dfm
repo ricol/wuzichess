@@ -160,7 +160,6 @@ object FormMain: TFormMain
     Width = 398
     Height = 398
     Align = alClient
-    OnMouseMove = PaintBoxMainMouseMove
     OnMouseUp = PaintBoxMainMouseUp
     OnPaint = PaintBoxMainPaint
     ExplicitWidth = 400

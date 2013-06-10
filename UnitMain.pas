@@ -64,8 +64,6 @@ type
     procedure MenuHelpStateTreeInforClick(Sender: TObject);
     procedure ComputerCalculateLevelClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure PaintBoxMainMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
   private
     { Private declarations }
     procedure ProcessMessage_WM_ERASEBKGND(var tmpMessage: TMessage); message WM_ERASEBKGND;
@@ -237,16 +235,6 @@ end;
 procedure TFormMain.MenuHelp_AboutClick(Sender: TObject);
 begin
   GGame.About;
-end;
-
-procedure TFormMain.PaintBoxMainMouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
-var
-  i, j: Integer;
-begin
-  i := GGame.YToI(Y);
-  j := GGame.XToJ(X);
-  OutputDebugString(PChar(Format('%d, %d (%f, %f)', [i, j, GGame.LenX, GGame.LenY])));
 end;
 
 procedure TFormMain.PaintBoxMainMouseUp(Sender: TObject;
