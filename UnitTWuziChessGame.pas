@@ -327,8 +327,9 @@ end;
 
 procedure TWuziChessGame.DrawAvailableMove;
 var
-  tmpI, tmpJ, tmpX, tmpY, tmpStartX, tmpStartY, tmpStartLenX, tmpStartLenY, k: Integer;
+  tmpI, tmpJ, k: Integer;
   tmpPoint: TPoint;
+  tmpX, tmpY, tmpStartX, tmpStartY, tmpStartLenX, tmpStartLenY: Double;
 begin
   if Self.IsTempGame then Exit;
   for k := 0 to FOldAvailableMoveNumber - 1 do
@@ -357,22 +358,22 @@ begin
       else
         Canvas.Pen.Color := COLOR_AVAILABLEMOVE_BLACK;
       Canvas.Pen.Width := 1;
-      Canvas.MoveTo(tmpX + tmpStartX, tmpY + tmpStartY);
-      Canvas.LineTo(tmpX + tmpStartX, tmpY + tmpStartY + tmpStartLenY);
-      Canvas.MoveTo(tmpX + tmpStartX, tmpY + tmpStartY);
-      Canvas.LineTo(tmpX + tmpStartX + tmpStartLenX, tmpY + tmpStartY);
-      Canvas.MoveTo(tmpX + tmpStartX, tmpY + FLenY - tmpStartY);
-      Canvas.LineTo(tmpX + tmpStartX, tmpY + FLenY - tmpStartY - tmpStartLenY);
-      Canvas.MoveTo(tmpX + tmpStartX, tmpY + FLenY - tmpStartY);
-      Canvas.LineTo(tmpX + tmpStartX + tmpStartLenX, tmpY + FLenY - tmpStartY);
-      Canvas.MoveTo(tmpX + FLenX - tmpStartX, tmpY + tmpStartY);
-      Canvas.LineTo(tmpX + FLenX - tmpStartX - tmpStartLenX, tmpY + tmpStartY);
-      Canvas.MoveTo(tmpX + FLenX - tmpStartX, tmpY + tmpStartY);
-      Canvas.LineTo(tmpX + FLenX - tmpStartX, tmpY + tmpStartY + tmpStartLenY);
-      Canvas.MoveTo(tmpX + FLenX - tmpStartX, tmpY + FLenY - tmpStartY);
-      Canvas.LineTo(tmpX + FLenX - tmpStartX - tmpStartLenX, tmpY + FLenY - tmpStartY);
-      Canvas.MoveTo(tmpX + FLenX - tmpStartX, tmpY + FLenY - tmpStartY);
-      Canvas.LineTo(tmpX + FLenX - tmpStartX, tmpY + FLenY - tmpStartY - tmpStartLenY);
+      Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY));
+      Canvas.LineTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY + tmpStartLenY));
+      Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY));
+      Canvas.LineTo(Trunc(tmpX + tmpStartX + tmpStartLenX), Trunc(tmpY + tmpStartY));
+      Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
+      Canvas.LineTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY - tmpStartLenY));
+      Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
+      Canvas.LineTo(Trunc(tmpX + tmpStartX + tmpStartLenX), Trunc(tmpY + FLenY - tmpStartY));
+      Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY));
+      Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX - tmpStartLenX), Trunc(tmpY + tmpStartY));
+      Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY));
+      Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY + tmpStartLenY));
+      Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
+      Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX - tmpStartLenX), Trunc(tmpY + FLenY - tmpStartY));
+      Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
+      Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY - tmpStartLenY));
     end;
   end;
 end;
@@ -394,10 +395,10 @@ begin
     Canvas.Rectangle(0, 0, tmpX, tmpY);
     for i := 0 to Self.FSize - 1 do
     begin
-      Canvas.MoveTo(0, FLenY * i);
-      Canvas.LineTo(tmpX, FLenY * i);
-      Canvas.MoveTo(FLenX * i, 0);
-      Canvas.LineTo(FLenX * i, tmpY);
+      Canvas.MoveTo(0, Trunc(FLenY * i));
+      Canvas.LineTo(tmpX, Trunc(FLenY * i));
+      Canvas.MoveTo(Trunc(FLenX * i), 0);
+      Canvas.LineTo(Trunc(FLenX * i), tmpY);
     end;
   end;
 end;
@@ -405,7 +406,7 @@ end;
 
 procedure TWuziChessGame.DrawLastMove;
 var
-  tmpX, tmpY, tmpStartX, tmpStartY, tmpStartLenX, tmpStartLenY: Integer;
+  tmpX, tmpY, tmpStartX, tmpStartY, tmpStartLenX, tmpStartLenY: Double;
 begin
   if Self.IsTempGame then Exit;
   DrawPiece(GetPiece(FOldLastMove.x, FOldLastMove.y), FOldLastMove.x, FOldLastMove.y);
@@ -420,28 +421,28 @@ begin
   begin
     Canvas.Pen.Color := clRed;
     Canvas.Pen.Width := 3;
-    Canvas.MoveTo(tmpX + tmpStartX, tmpY + tmpStartY);
-    Canvas.LineTo(tmpX + tmpStartX, tmpY + tmpStartY + tmpStartLenY);
-    Canvas.MoveTo(tmpX + tmpStartX, tmpY + tmpStartY);
-    Canvas.LineTo(tmpX + tmpStartX + tmpStartLenX, tmpY + tmpStartY);
-    Canvas.MoveTo(tmpX + tmpStartX, tmpY + FLenY - tmpStartY);
-    Canvas.LineTo(tmpX + tmpStartX, tmpY + FLenY - tmpStartY - tmpStartLenY);
-    Canvas.MoveTo(tmpX + tmpStartX, tmpY + FLenY - tmpStartY);
-    Canvas.LineTo(tmpX + tmpStartX + tmpStartLenX, tmpY + FLenY - tmpStartY);
-    Canvas.MoveTo(tmpX + FLenX - tmpStartX, tmpY + tmpStartY);
-    Canvas.LineTo(tmpX + FLenX - tmpStartX - tmpStartLenX, tmpY + tmpStartY);
-    Canvas.MoveTo(tmpX + FLenX - tmpStartX, tmpY + tmpStartY);
-    Canvas.LineTo(tmpX + FLenX - tmpStartX, tmpY + tmpStartY + tmpStartLenY);
-    Canvas.MoveTo(tmpX + FLenX - tmpStartX, tmpY + FLenY - tmpStartY);
-    Canvas.LineTo(tmpX + FLenX - tmpStartX - tmpStartLenX, tmpY + FLenY - tmpStartY);
-    Canvas.MoveTo(tmpX + FLenX - tmpStartX, tmpY + FLenY - tmpStartY);
-    Canvas.LineTo(tmpX + FLenX - tmpStartX, tmpY + FLenY - tmpStartY - tmpStartLenY);
+    Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY));
+    Canvas.LineTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY + tmpStartLenY));
+    Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY));
+    Canvas.LineTo(Trunc(tmpX + tmpStartX + tmpStartLenX), Trunc(tmpY + tmpStartY));
+    Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
+    Canvas.LineTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY - tmpStartLenY));
+    Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
+    Canvas.LineTo(Trunc(tmpX + tmpStartX + tmpStartLenX), Trunc(tmpY + FLenY - tmpStartY));
+    Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY));
+    Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX - tmpStartLenX), Trunc(tmpY + tmpStartY));
+    Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY));
+    Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY + tmpStartLenY));
+    Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
+    Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX - tmpStartLenX), Trunc(tmpY + FLenY - tmpStartY));
+    Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
+    Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY - tmpStartLenY));
   end;
 end;
 
 procedure TWuziChessGame.DrawPiece(piece: TPiece; i, j: integer);
 var
-  tmpX, tmpY: Integer;
+  tmpX, tmpY: Double;
 begin
   if Self.IsTempGame then Exit;
   with FPaintBox do
@@ -453,7 +454,7 @@ begin
     tmpY := IToY(i);
     FLenX := FPaintBox.Width div FSize;
     FLenY := FPaintBox.Height div FSize;
-    Canvas.Rectangle(tmpX, tmpY, tmpX + FLenX, tmpY + FLenY);
+    Canvas.Rectangle(Trunc(tmpX), Trunc(tmpY), Trunc(tmpX + FLenX), Trunc(tmpY + FLenY));
     if FBoard[i, j] <> PIECE_BLANK then
     begin
       if FBoard[i, j] = PIECE_WHITE then
@@ -464,7 +465,7 @@ begin
       Canvas.Pen.Width := 1;
       tmpX := JToX(j);
       tmpY := IToY(i);
-      Canvas.Ellipse(tmpX + 5, tmpY + 5, tmpX + FLenX - 5, tmpY + FLenY - 5);
+      Canvas.Ellipse(Trunc(tmpX + 5), Trunc(tmpY + 5), Trunc(tmpX + FLenX - 5), Trunc(tmpY + FLenY - 5));
       if (i = FLastMove.x) and (j = FLastMove.y) then
         DrawLastMove();
     end;

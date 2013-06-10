@@ -9,6 +9,8 @@ uses
 type
   TBoardGame = class
   protected
+    FLenX: Double;
+    FLenY: Double;
     FBlackColor: TColor;
     FTurn: TTurn;
     FWhiteColor: TColor;
@@ -26,7 +28,6 @@ type
     FIsPlaying: Boolean;
     FSize: Integer;
     FPaintBox: TPaintBox;
-    FLenX, FLenY: Integer;
     FBoard: TBoard;
     FSoundEffect_Regret: string;
     FSoundEffect_Win: string;
@@ -54,6 +55,8 @@ type
     procedure SetPiece(piece: TPiece; i, j: integer);
     function GetPiece(i, j: integer): TPiece;
     procedure SetListBox(const Value: TListBox);
+    procedure SetLenX(const Value: Double);
+    procedure SetLenY(const Value: Double);
   public
     constructor Create(PaintBox: TPaintBox; size: Integer; TempObject: Boolean); overload; virtual;
     constructor Create(boardGame: TBoardGame); overload; virtual;
@@ -76,6 +79,8 @@ type
     property ProgressBar: TProgressBar read FProgressBar write SetProgressBar;
     property ListBox: TListBox read FListBox write SetListBox;
     property LastMove: TPoint read FLastMove;
+    property LenX: Double read FLenX write SetLenX;
+    property LenY: Double read FLenY write SetLenY;
     procedure About(); virtual; abstract;
     procedure NewGame(); virtual; abstract;
     procedure CloseGame(); virtual; abstract;
@@ -84,10 +89,13 @@ type
     procedure ResetGame; virtual; abstract;
     procedure Refresh(); virtual; abstract;
     procedure Swap(); virtual; abstract;
-    function XToJ(x: integer): integer;
-    function YToI(y: integer): integer;
-    function JToX(j: integer): integer;
-    function IToY(i: integer): integer;
+    function XToJ(x: Double): integer;
+    function YToI(y: Double): integer;
+    function JToX(j: integer): Double;
+    function IToY(i: integer): Double;
+    function IsValidI(i: Integer): Boolean;
+    function IsValidJ(j: Integer): Boolean;
+    function IsValidIJ(i, j: Integer): Boolean;
     class function GetOpponent(piece: TPiece): TPiece;
   end;
 
@@ -111,8 +119,8 @@ begin
   FDifficulty := DIFF_LOW;
   FIsTempGame := TempObject;
   FPaintBox := PaintBox;
-  FLenX := PaintBox.ClientWidth div FSize;
-  FLenY := PaintBox.ClientHeight div FSize;
+  FLenX := PaintBox.ClientWidth / FSize;
+  FLenY := PaintBox.ClientHeight / FSize;
   FOldAvailableMoveData := TListOfPoints.Create;
   FAvailableMoveData := TListOfPoints.Create;
 end;
@@ -153,12 +161,27 @@ begin
   inherited;
 end;
 
-function TBoardGame.IToY(i: integer): integer;
+function TBoardGame.IsValidI(i: Integer): Boolean;
+begin
+  Result := (i <= NUMBER - 1) and (i >= 0);
+end;
+
+function TBoardGame.IsValidIJ(i, j: Integer): Boolean;
+begin
+  Result := Self.IsValidI(i) and Self.IsValidJ(j);
+end;
+
+function TBoardGame.IsValidJ(j: Integer): Boolean;
+begin
+  Result := (j <= NUMBER - 1) and (j >= 0);
+end;
+
+function TBoardGame.IToY(i: integer): Double;
 begin
   result := i * FLenY;
 end;
 
-function TBoardGame.JToX(j: integer): integer;
+function TBoardGame.JToX(j: integer): Double;
 begin
   result := j * FLenX;
 end;
@@ -196,6 +219,16 @@ end;
 procedure TBoardGame.SetIsTempGame(const Value: Boolean);
 begin
   FIsTempGame := Value;
+end;
+
+procedure TBoardGame.SetLenX(const Value: Double);
+begin
+  FLenX := Value;
+end;
+
+procedure TBoardGame.SetLenY(const Value: Double);
+begin
+  FLenY := Value;
 end;
 
 procedure TBoardGame.SetListBox(const Value: TListBox);
@@ -243,14 +276,14 @@ begin
   FWhiteColor := Value;
 end;
 
-function TBoardGame.XToJ(x: integer): integer;
+function TBoardGame.XToJ(x: Double): integer;
 begin
-  result := x div FLenY;
+  result := Trunc(x / FLenx);
 end;
 
-function TBoardGame.YToI(y: integer): integer;
+function TBoardGame.YToI(y: Double): integer;
 begin
-  result := y div FLenX;
+  result := Trunc(y / FLenY);
 end;
 
 class function TBoardGame.GetOpponent(piece: TPiece): TPiece;

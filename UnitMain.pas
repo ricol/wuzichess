@@ -63,6 +63,9 @@ type
     procedure AutoplayByRecursiveClick(Sender: TObject);
     procedure MenuHelpStateTreeInforClick(Sender: TObject);
     procedure ComputerCalculateLevelClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure PaintBoxMainMouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
   private
     { Private declarations }
     procedure ProcessMessage_WM_ERASEBKGND(var tmpMessage: TMessage); message WM_ERASEBKGND;
@@ -191,6 +194,16 @@ begin
   FreeAndNil(GFormData);
 end;
 
+procedure TFormMain.FormResize(Sender: TObject);
+begin
+  if GGame <> nil then
+  begin
+    GGame.LenX := Self.PaintBoxMain.Width div NUMBER;
+    GGame.LenY := Self.PaintBoxMain.Height div NUMBER;
+    GGame.Refresh;
+  end;
+end;
+
 procedure TFormMain.ComputerCalculateLevelClick(Sender: TObject);
 begin
   if MenuComputerLevelLow.Checked then
@@ -226,6 +239,16 @@ begin
   GGame.About;
 end;
 
+procedure TFormMain.PaintBoxMainMouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+var
+  i, j: Integer;
+begin
+  i := GGame.YToI(Y);
+  j := GGame.XToJ(X);
+  OutputDebugString(PChar(Format('%d, %d (%f, %f)', [i, j, GGame.LenX, GGame.LenY])));
+end;
+
 procedure TFormMain.PaintBoxMainMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
@@ -237,6 +260,9 @@ begin
   //get current position
   i := GGame.YToI(Y);
   j := GGame.XToJ(X);
+
+  if not GGame.IsValidIJ(i, j) then Exit;
+
   tmpPiece := PIECE_WHITE;
   if not GGame.IsAvailableMove(i, j, tmpPiece) then
   begin

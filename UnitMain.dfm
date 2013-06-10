@@ -2,10 +2,9 @@ object FormMain: TFormMain
   Left = 264
   Top = 163
   BorderIcons = [biSystemMenu, biMinimize]
-  BorderStyle = bsSingle
   Caption = 'WuziChess - Ricol'
-  ClientHeight = 419
-  ClientWidth = 400
+  ClientHeight = 417
+  ClientWidth = 398
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -152,21 +151,25 @@ object FormMain: TFormMain
   Position = poDesigned
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object PaintBoxMain: TPaintBox
     Left = 0
     Top = 0
-    Width = 400
-    Height = 400
+    Width = 398
+    Height = 398
     Align = alClient
+    OnMouseMove = PaintBoxMainMouseMove
     OnMouseUp = PaintBoxMainMouseUp
     OnPaint = PaintBoxMainPaint
+    ExplicitWidth = 400
+    ExplicitHeight = 400
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 400
-    Width = 400
+    Top = 398
+    Width = 398
     Height = 19
     Panels = <
       item
