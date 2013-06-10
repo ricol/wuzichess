@@ -20,7 +20,7 @@ type
     function AnalyzeToLevel(level: Integer; var x, y: Integer; piece: TPiece): boolean;
     procedure NextLevel(const totalLevel: Integer; piece: TPiece; const step: TPoint; gameOld: TWuziChessGame; var stateTree: TStateTree; var currentNode: TStateNode);
   public
-    constructor Create(PaintBox: TPaintBox; size: Integer; TempObject: Boolean); overload; override;
+    constructor Create(PaintBox: TPaintBox; sizeX: Integer; sizeY: Integer; TempObject: Boolean); overload; override;
     constructor Create(wuziChess: TBoardGame); overload; override;
     destructor Destroy(); override;
     function IsAvailableMove(i, j: Integer; piece: TPiece): Boolean;
@@ -82,8 +82,8 @@ begin
   OutputDebugString(PChar(Format('Analyzing...Total Leaves: %d', [tmpAllLeaves.Count])));
 
   repeat
-    tmpI := random(NUMBER);
-    tmpJ := random(NUMBER);
+    tmpI := random(NUMBER_X);
+    tmpJ := random(NUMBER_Y);
   until self.GetPiece(tmpI, tmpJ) = PIECE_BLANK;
   Result.X := tmpI;
   Result.Y := tmpJ;
@@ -220,19 +220,7 @@ end;
 
 function TWuziChessGame.AutoPlay(var i, j: Integer; piece: TPiece;
   way: TWay): Boolean;
-//var
-//  tmpI, tmpJ: Integer;
 begin
-//  Result := Self.GetPiecesNumber(PIECE_BLANK) > 0;
-//  if Result then
-//  begin
-//    repeat
-//      tmpI := random(NUMBER);
-//      tmpJ := random(NUMBER);
-//    until self.GetPiece(tmpI, tmpJ) = PIECE_BLANK;
-//    i := tmpI;
-//    j := tmpJ;
-//  end;
   if way = LOOP then
     Result := self.GoToLevel(i, j, piece)
   else
@@ -288,14 +276,14 @@ begin
 end;
 
 
-constructor TWuziChessGame.Create(PaintBox: TPaintBox; size: Integer;
+constructor TWuziChessGame.Create(PaintBox: TPaintBox; sizeX: Integer; sizeY: Integer;
   TempObject: Boolean);
 var
   i, j: integer;
 begin
-  inherited Create(PaintBox, size, TempObject);
-  for i := 0 to size - 1 do
-    for j := 0 to size - 1 do
+  inherited Create(PaintBox, sizeX, sizeY, TempObject);
+  for i := 0 to sizeX - 1 do
+    for j := 0 to sizeY - 1 do
       FBoard[i, j] := PIECE_BLANK;
   Self.FWhiteColor := COLOR_WHITE;
   Self.FGridColor := COLOR_GRID;
@@ -345,8 +333,8 @@ begin
     tmpPoint := FAvailableMoveData[k];
     tmpI := tmpPoint.x;
     tmpJ := tmpPoint.y;
-    tmpX := JToX(tmpJ);
-    tmpY := IToY(tmpI);
+    tmpX := IToX(tmpI);
+    tmpY := JToY(tmpJ);
     tmpStartX := 3;
     tmpStartY := 3;
     tmpStartLenX := 5;
@@ -393,7 +381,7 @@ begin
     Canvas.Pen.Color := FGridColor;
     Canvas.Pen.Width := 1;
     Canvas.Rectangle(0, 0, tmpX, tmpY);
-    for i := 0 to Self.FSize - 1 do
+    for i := 0 to Self.FSizeX - 1 do
     begin
       Canvas.MoveTo(0, Trunc(FLenY * i));
       Canvas.LineTo(tmpX, Trunc(FLenY * i));
@@ -411,8 +399,8 @@ begin
   if Self.IsTempGame then Exit;
   DrawPiece(GetPiece(FOldLastMove.x, FOldLastMove.y), FOldLastMove.x, FOldLastMove.y);
   if not IsPlaying then exit;
-  tmpX := JToX(FLastMove.y);
-  tmpY := IToY(FLastMove.x);
+  tmpX := IToX(FLastMove.x);
+  tmpY := JToY(FLastMove.y);
   tmpStartX := 3;
   tmpStartY := 3;
   tmpStartLenX := 5;
@@ -450,10 +438,10 @@ begin
     Canvas.Pen.Color := FGridColor;
     Canvas.Pen.Width := 1;
     Canvas.Brush.Color := FBackgroundColor;
-    tmpX := JToX(j);
-    tmpY := IToY(i);
-    FLenX := FPaintBox.Width div FSize;
-    FLenY := FPaintBox.Height div FSize;
+    tmpX := IToX(i);
+    tmpY := JToY(j);
+    FLenX := FPaintBox.Width div FSizeX;
+    FLenY := FPaintBox.Height div FSizeY;
     Canvas.Rectangle(Trunc(tmpX), Trunc(tmpY), Trunc(tmpX + FLenX), Trunc(tmpY + FLenY));
     if FBoard[i, j] <> PIECE_BLANK then
     begin
@@ -463,8 +451,8 @@ begin
         Canvas.Brush.Color := FBlackColor;
       Canvas.Pen.Color := Canvas.Brush.Color;
       Canvas.Pen.Width := 1;
-      tmpX := JToX(j);
-      tmpY := IToY(i);
+      tmpX := IToX(i);
+      tmpY := JToY(j);
       Canvas.Ellipse(Trunc(tmpX + 5), Trunc(tmpY + 5), Trunc(tmpX + FLenX - 5), Trunc(tmpY + FLenY - 5));
       if (i = FLastMove.x) and (j = FLastMove.y) then
         DrawLastMove();
@@ -480,8 +468,8 @@ var
 begin
   data := TListOfPoints.Create;
   data.Clear;
-  for i := 0 to FSize - 1 do
-    for j := 0 to FSize - 1 do
+  for i := 0 to FSizeX - 1 do
+    for j := 0 to FSizeY - 1 do
     begin
       if FBoard[i, j] = PIECE_BLANK then
       begin
@@ -689,13 +677,13 @@ var
   i, j: integer;
 begin
   inherited;
-  for i := 0 to FSize - 1 do
-    for j := 0 to FSize - 1 do
+  for i := 0 to FSizeX - 1 do
+    for j := 0 to FSizeY - 1 do
       FBoard[i, j] := PIECE_BLANK;
-  Self.PlayAtMove(4, 4, PIECE_WHITE);
-  Self.PlayAtMove(4, 5, PIECE_BLACK);
-  Self.PlayAtMove(5, 5, PIECE_WHITE);
-  Self.PlayAtMove(5, 4, PIECE_BLACK);
+//  Self.PlayAtMove(4, 4, PIECE_WHITE);
+//  Self.PlayAtMove(4, 5, PIECE_BLACK);
+//  Self.PlayAtMove(5, 5, PIECE_WHITE);
+//  Self.PlayAtMove(5, 4, PIECE_BLACK);
   Self.Turn := WHITE;
   Self.IsPlaying := True;
   Self.DrawAllAvailableMoves(WHITE);
@@ -781,8 +769,8 @@ var
   i, j: Integer;
 begin
   Self.DrawBoard;
-  for i := 0 to FSize - 1 do
-    for j := 0 to FSize - 1 do
+  for i := 0 to FSizeX - 1 do
+    for j := 0 to FSizeY - 1 do
       DrawPiece(FBoard[i, j], i, j);
   DrawLastMove();
   DrawAllAvailableMoves(Self.Turn);
@@ -820,8 +808,8 @@ var
   tmpCount, i, j: Integer;
 begin
   tmpCount := 0;
-  for i := 0 to FSize - 1 do
-    for j := 0 to FSize - 1 do
+  for i := 0 to FSizeX - 1 do
+    for j := 0 to FSizeY - 1 do
     begin
       if FBoard[i, j] = piece then inc(tmpCount);
     end;
@@ -846,7 +834,7 @@ begin
   tmpChess := Self.GetPiece(tmpI, tmpJ);
   for i := 1 to 4 do
   begin
-    if (tmpI + i <= NUMBER - 1) and (Self.GetPiece(tmpI + i, tmpJ) = tmpChess) then
+    if (tmpI + i <= NUMBER_X - 1) and (Self.GetPiece(tmpI + i, tmpJ) = tmpChess) then
       inc(one)
     else
       break;
@@ -869,7 +857,7 @@ begin
   two := 0;
   for j := 1 to 4 do
   begin
-    if (tmpJ + j <= NUMBER - 1) and (Self.GetPiece(tmpI, tmpJ + j) = tmpChess) then
+    if (tmpJ + j <= NUMBER_Y - 1) and (Self.GetPiece(tmpI, tmpJ + j) = tmpChess) then
       inc(one)
     else
       break;
@@ -892,7 +880,7 @@ begin
   two := 0;
   for i := 1 to 4 do
   begin
-    if (tmpI + i <= NUMBER - 1) and (tmpJ + i <= NUMBER - 1) and (Self.GetPiece(tmpI + i, tmpJ + i) = tmpChess) then
+    if (tmpI + i <= NUMBER_X - 1) and (tmpJ + i <= NUMBER_Y - 1) and (Self.GetPiece(tmpI + i, tmpJ + i) = tmpChess) then
       inc(one)
     else
       break;
@@ -915,14 +903,14 @@ begin
   two := 0;
   for i := 1 to 4 do
   begin
-    if (tmpI - i >= 0) and (tmpJ + i <= NUMBER - 1) and (Self.GetPiece(tmpI - i, tmpJ + i) = tmpChess) then
+    if (tmpI - i >= 0) and (tmpJ + i <= NUMBER_Y - 1) and (Self.GetPiece(tmpI - i, tmpJ + i) = tmpChess) then
       inc(one)
     else
       break;
   end;
   for i := 1 to 4 do
   begin
-    if (tmpI + i <= NUMBER - 1) and (tmpJ - i >= 0) and (Self.GetPiece(tmpI + i, tmpJ - i) = tmpChess) then
+    if (tmpI + i <= NUMBER_X - 1) and (tmpJ - i >= 0) and (Self.GetPiece(tmpI + i, tmpJ - i) = tmpChess) then
       inc(two)
     else
       break;

@@ -7,7 +7,8 @@ uses
   Dialogs, Menus, ComCtrls, ExtCtrls, ToolWin, Generics.Collections;
 
 const
-  NUMBER = 10;
+  NUMBER_X = 9;
+  NUMBER_Y = 9;
   COLOR_AVAILABLEMOVE_WHITE = clWhite;
   COLOR_AVAILABLEMOVE_BLACK = clBlack;
   COLOR_GRID = clBlack;

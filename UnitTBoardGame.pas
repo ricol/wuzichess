@@ -26,7 +26,8 @@ type
     FLastTurn: TTurn;
     FIsTempGame: Boolean;
     FIsPlaying: Boolean;
-    FSize: Integer;
+    FSizeX: Integer;
+    FSizeY: Integer;
     FPaintBox: TPaintBox;
     FBoard: TBoard;
     FSoundEffect_Regret: string;
@@ -58,7 +59,7 @@ type
     procedure SetLenX(const Value: Double);
     procedure SetLenY(const Value: Double);
   public
-    constructor Create(PaintBox: TPaintBox; size: Integer; TempObject: Boolean); overload; virtual;
+    constructor Create(PaintBox: TPaintBox; sizeX: Integer; sizeY: Integer; TempObject: Boolean); overload; virtual;
     constructor Create(boardGame: TBoardGame); overload; virtual;
     destructor Destroy(); override;
     property Difficulty: TDifficulties read FDifficulty write SetDifficulty;
@@ -89,10 +90,10 @@ type
     procedure ResetGame; virtual; abstract;
     procedure Refresh(); virtual; abstract;
     procedure Swap(); virtual; abstract;
-    function XToJ(x: Double): integer;
-    function YToI(y: Double): integer;
-    function JToX(j: integer): Double;
-    function IToY(i: integer): Double;
+    function XToI(x: Double): integer;
+    function YToJ(y: Double): integer;
+    function JToY(j: integer): Double;
+    function IToX(i: integer): Double;
     function IsValidI(i: Integer): Boolean;
     function IsValidJ(j: Integer): Boolean;
     function IsValidIJ(i, j: Integer): Boolean;
@@ -103,12 +104,13 @@ implementation
 
 { TBoardGame }
 
-constructor TBoardGame.Create(PaintBox: TPaintBox; size: Integer; TempObject: Boolean);
+constructor TBoardGame.Create(PaintBox: TPaintBox; sizeX: Integer; sizeY: Integer; TempObject: Boolean);
 begin
   inherited Create();
-  FSize := size;
+  FSizeX := sizeX;
+  FSizeY := sizeY;
   SetLength(Self.FBoard, 0, 0);
-  SetLength(Self.FBoard, size, size);
+  SetLength(Self.FBoard, sizeX, sizeY);
   FSoundEffect_Lose := '';
   FSoundEffect_Draw := '';
   FSoundEffect_Win := '';
@@ -119,8 +121,8 @@ begin
   FDifficulty := DIFF_LOW;
   FIsTempGame := TempObject;
   FPaintBox := PaintBox;
-  FLenX := PaintBox.ClientWidth / FSize;
-  FLenY := PaintBox.ClientHeight / FSize;
+  FLenX := PaintBox.ClientWidth / FSizeX;
+  FLenY := PaintBox.ClientHeight / FSizeY;
   FOldAvailableMoveData := TListOfPoints.Create;
   FAvailableMoveData := TListOfPoints.Create;
 end;
@@ -133,14 +135,15 @@ begin
   inherited Create();
   FIsTempGame := boardGame.FIsTempGame;
   FIsPlaying := boardGame.FIsPlaying;
-  FSize := boardGame.FSize;
+  FSizeX := boardGame.FSizeX;
+  FSizeY := boardGame.FSizeY;
   FPaintBox := boardGame.FPaintBox;
   FLenX := boardGame.FLenX;
   FLenY := boardGame.FLenY;
   SetLength(Self.FBoard, 0, 0);
-  SetLength(Self.FBoard, boardGame.FSize, boardGame.FSize);
-  for i := 0 to FSize - 1 do
-    for j := 0 to FSize - 1 do
+  SetLength(Self.FBoard, boardGame.FSizeX, boardGame.FSizeY);
+  for i := 0 to FSizeX - 1 do
+    for j := 0 to FSizeY - 1 do
       FBoard[i, j] := boardGame.FBoard[i, j];
 
   FSoundEffect_Lose := boardGame.FSoundEffect_Lose;
@@ -163,7 +166,7 @@ end;
 
 function TBoardGame.IsValidI(i: Integer): Boolean;
 begin
-  Result := (i <= NUMBER - 1) and (i >= 0);
+  Result := (i <= NUMBER_X - 1) and (i >= 0);
 end;
 
 function TBoardGame.IsValidIJ(i, j: Integer): Boolean;
@@ -173,17 +176,17 @@ end;
 
 function TBoardGame.IsValidJ(j: Integer): Boolean;
 begin
-  Result := (j <= NUMBER - 1) and (j >= 0);
+  Result := (j <= NUMBER_Y - 1) and (j >= 0);
 end;
 
-function TBoardGame.IToY(i: integer): Double;
+function TBoardGame.IToX(i: integer): Double;
 begin
-  result := i * FLenY;
+  result := i * FLenX;
 end;
 
-function TBoardGame.JToX(j: integer): Double;
+function TBoardGame.JToY(j: integer): Double;
 begin
-  result := j * FLenX;
+  result := j * FLenY;
 end;
 
 procedure TBoardGame.SetBackgroundColor(const Value: TColor);
@@ -276,12 +279,12 @@ begin
   FWhiteColor := Value;
 end;
 
-function TBoardGame.XToJ(x: Double): integer;
+function TBoardGame.XToI(x: Double): integer;
 begin
   result := Trunc(x / FLenx);
 end;
 
-function TBoardGame.YToI(y: Double): integer;
+function TBoardGame.YToJ(y: Double): integer;
 begin
   result := Trunc(y / FLenY);
 end;
