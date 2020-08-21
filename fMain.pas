@@ -1,10 +1,10 @@
-unit UnitMain;
+unit fMain;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, ComCtrls, ExtCtrls, ToolWin, UnitCommon;
+  Dialogs, Menus, ComCtrls, ExtCtrls, ToolWin, Common;
 
 type
   TFormMain = class(TForm)
@@ -76,7 +76,7 @@ var
 
 implementation
 
-uses UnitTWuziChessGame, UnitFormData;
+uses WuziChessGame, FormData;
 
 {$R *.dfm}
 

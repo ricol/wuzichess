@@ -2,14 +2,14 @@ program WuziChess;
 
 uses
   Forms,
-  UnitMain in 'UnitMain.pas' {FormMain},
-  UnitCommon in 'UnitCommon.pas',
-  UnitTBoardGame in 'UnitTBoardGame.pas',
-  UnitTStateTree in 'UnitTStateTree.pas',
-  UnitTStateNode in 'UnitTStateNode.pas',
-  UnitFormData in 'UnitFormData.pas' {FormStateTreeData},
-  UnitTWuziChessStateTree in 'UnitTWuziChessStateTree.pas',
-  UnitTWuziChessGame in 'UnitTWuziChessGame.pas';
+  fMain in 'fMain.pas' {FormMain},
+  Common in 'Common.pas',
+  BoardGame in 'BoardGame.pas',
+  StateTree in 'StateTree.pas',
+  StateNode in 'StateNode.pas',
+  FormData in 'FormData.pas' {FormStateTreeData},
+  WuziChessStateTree in 'WuziChessStateTree.pas',
+  WuziChessGame in 'WuziChessGame.pas';
 
 {$R *.res}
 

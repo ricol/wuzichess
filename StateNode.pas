@@ -1,9 +1,9 @@
-unit UnitTStateNode;
+unit StateNode;
 
 interface
 
 uses
-  Messages, Windows, SysUtils, UnitTBoardGame, UnitCommon, Generics.Collections;
+  Messages, Windows, SysUtils, BoardGame, Common, Generics.Collections;
 
 type
   TStateNode = class;

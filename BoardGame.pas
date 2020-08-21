@@ -1,10 +1,10 @@
-unit UnitTBoardGame;
+unit BoardGame;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, ComCtrls, ExtCtrls, StdCtrls, ToolWin, UnitCommon;
+  Dialogs, Menus, ComCtrls, ExtCtrls, StdCtrls, ToolWin, Common;
 
 type
   TBoardGame = class

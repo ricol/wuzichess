@@ -1,10 +1,10 @@
-unit UnitTStateTree;
+unit StateTree;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Generics.Defaults, Generics.Collections,
-  Dialogs, Menus, ComCtrls, ExtCtrls, ToolWin, StdCtrls, UnitCommon, UnitTBoardGame, UnitTStateNode;
+  Dialogs, Menus, ComCtrls, ExtCtrls, ToolWin, StdCtrls, Common, BoardGame, StateNode;
 
 type
   TStateTree = class abstract

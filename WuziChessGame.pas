@@ -1,10 +1,10 @@
-unit UnitTWuziChessGame;
+unit WuziChessGame;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, ComCtrls, ExtCtrls, StdCtrls, ToolWin, UnitCommon, UnitTBoardGame, UnitTStateNode, UnitTStateTree;
+  Dialogs, Menus, ComCtrls, ExtCtrls, StdCtrls, ToolWin, Common, BoardGame, StateNode, StateTree;
 
 type
   TWuziChessGame = class(TBoardGame)
@@ -48,7 +48,7 @@ implementation
 { TWuziChessGame }
 
 uses
-  UnitTWuziChessStateTree;
+  WuziChessStateTree;
 
 var
   GStateTree: TStateTree;
