@@ -65,92 +65,92 @@ end;
 function TWuziChessGame.AnalyzeTheStateTree(stateTree: TStateTree;
   turn: TTurn): TPoint;
 var
-  tmpStateTree: TStateTree;
-  tmpAllLeaves: TListOfNodes;
-  tmpCurrentNode: TStateNode;
-  tmpGameCurrent: TWuziChessGame;
-  tmpMax, k, l, tmpNumberOfBlack, tmpNumberOfWhite, tmpResult: Integer;
-  tmpPoint: TPoint;
-  tmpI, tmpJ: Integer;
+  tree: TStateTree;
+  allLeaves: TListOfNodes;
+  currentNode: TStateNode;
+  currentGame: TWuziChessGame;
+  max, k, l, blackNum, whiteNum, res: Integer;
+  point: TPoint;
+  i, j: Integer;
 begin
   //analyze the state tree and find the optimum node
-  tmpStateTree := stateTree;
-  tmpAllLeaves := tmpStateTree.getAllLeaves(True);
+  tree := stateTree;
+  allLeaves := tree.getAllLeaves(True);
 
-  tmpMax := 0;
+  max := 0;
   l := 0;
-  OutputDebugString(PChar(Format('Analyzing...Total Leaves: %d', [tmpAllLeaves.Count])));
+  OutputDebugString(PChar(Format('Analyzing...Total Leaves: %d', [allLeaves.Count])));
 
   repeat
-    tmpI := random(NUMBER_X);
-    tmpJ := random(NUMBER_Y);
-  until self.GetPiece(tmpI, tmpJ) = PIECE_BLANK;
-  Result.X := tmpI;
-  Result.Y := tmpJ;
+    i := random(NUMBER_X);
+    j := random(NUMBER_Y);
+  until self.GetPiece(i, j) = PIECE_BLANK;
+  Result.X := i;
+  Result.Y := j;
   exit;
 
   if turn = WHITE then
   begin
-    for k := 0 to tmpAllLeaves.Count - 1 do
+    for k := 0 to allLeaves.Count - 1 do
     begin
-      tmpCurrentNode := tmpAllLeaves[k];
+      currentNode := allLeaves[k];
 
-      tmpGameCurrent := TWuziChessGame(tmpCurrentNode.data);
+      currentGame := TWuziChessGame(currentNode.data);
 
-      tmpNumberOfBlack := tmpGameCurrent.GetPiecesNumber(PIECE_BLACK);
-      tmpNumberOfWhite := tmpGameCurrent.GetPiecesNumber(PIECE_WHITE);
-      tmpResult := tmpNumberOfWhite - tmpNumberOfBlack;
+      blackNum := currentGame.GetPiecesNumber(PIECE_BLACK);
+      whiteNum := currentGame.GetPiecesNumber(PIECE_WHITE);
+      res := whiteNum - blackNum;
 
-      if tmpNumberOfBlack <= 0 then
+      if blackNum <= 0 then
       begin
         l := k;
-        OutputDebugString(PChar(Format('#######: Found The Optimal Result! Level %d', [TStateTree.getLevel(tmpCurrentNode)])));
-        OutputDebugString(PChar(Format('tmpResult: %d', [tmpResult])));
+        OutputDebugString(PChar(Format('#######: Found The Optimal Result! Level %d', [TStateTree.getLevel(currentNode)])));
+        OutputDebugString(PChar(Format('tmpResult: %d', [res])));
         Beep;
         break;
       end;
 
-      if tmpResult >= tmpMax then
+      if res >= max then
       begin
         l := k;
-        tmpMax := tmpResult;
-        OutputDebugString(PChar(Format('tmpMax: %d', [tmpMax])));
+        max := res;
+        OutputDebugString(PChar(Format('tmpMax: %d', [max])));
       end;
     end;
   end else begin
-    for k := 0 to tmpAllLeaves.Count - 1 do
+    for k := 0 to allLeaves.Count - 1 do
     begin
-      tmpCurrentNode := tmpAllLeaves[k];
-      tmpGameCurrent := TWuziChessGame(tmpCurrentNode.data);
+      currentNode := allLeaves[k];
+      currentGame := TWuziChessGame(currentNode.data);
 
-      tmpNumberOfBlack := tmpGameCurrent.GetPiecesNumber(PIECE_BLACK);
-      tmpNumberOfWhite := tmpGameCurrent.GetPiecesNumber(PIECE_WHITE);
-      tmpResult := tmpNumberOfBlack - tmpNumberOfWhite;
+      blackNum := currentGame.GetPiecesNumber(PIECE_BLACK);
+      whiteNum := currentGame.GetPiecesNumber(PIECE_WHITE);
+      res := blackNum - whiteNum;
 
-      if tmpNumberOfWhite <= 0 then
+      if whiteNum <= 0 then
       begin
         l := k;
-        OutputDebugString(PChar(Format('#######: Found The Optimal Result! Level %d', [TStateTree.getLevel(tmpCurrentNode)])));
-        OutputDebugString(PChar(Format('tmpResult: %d', [tmpResult])));
+        OutputDebugString(PChar(Format('#######: Found The Optimal Result! Level %d', [TStateTree.getLevel(currentNode)])));
+        OutputDebugString(PChar(Format('tmpResult: %d', [res])));
         Beep;
         break;
       end;
 
-      if tmpResult >= tmpMax then
+      if res >= max then
       begin
         l := k;
-        tmpMax := tmpResult;
-        OutputDebugString(PChar(Format('tmpMax: %d', [tmpMax])));
+        max := res;
+        OutputDebugString(PChar(Format('tmpMax: %d', [max])));
       end;
     end;
   end;
 
-  tmpCurrentNode := tmpAllLeaves[l];
-  tmpPoint.X := tmpCurrentNode.step_i;
-  tmpPoint.Y := tmpCurrentNode.step_j;
-  FreeAndNil(tmpAllLeaves);
+  currentNode := allLeaves[l];
+  point.X := currentNode.step_i;
+  point.Y := currentNode.step_j;
+  FreeAndNil(allLeaves);
 
-  Result := tmpPoint;
+  Result := point;
 end;
 
 
@@ -158,52 +158,52 @@ function TWuziChessGame.AnalyzeToLevel(level: Integer; var x, y: Integer;
   piece: TPiece): boolean;
 var
   k: Integer;
-  tmpNumber: Integer;
-  tmpData: TListOfPoints;
-  tmpGame: TWuziChessGame;
+  num: Integer;
+  points: TListOfPoints;
+  game: TWuziChessGame;
 
-  tmpCurrentNode: TStateNode;
-  tmpPoint: TPoint;
-  tmpHead: TBoardGame;
+  currentNode: TStateNode;
+  point: TPoint;
+  head: TBoardGame;
 begin
   //create the State Tree and save all possible chess state into the tree
   OutputDebugString('Analyzing by recursive...');
 
-  tmpHead := TWuziChessGame.Create(Self);
-  GStateTree := TWuziChessStateTree.Create(tmpHead);
+  head := TWuziChessGame.Create(Self);
+  GStateTree := TWuziChessStateTree.Create(head);
   GStateTree.ListBox := Self.ListBox;
-  tmpCurrentNode := GStateTree.Head;
+  currentNode := GStateTree.Head;
 
   //get all possible moves for piece.
-  tmpNumber := GetAllAvailableMove(tmpData, piece);
+  num := GetAllAvailableMove(points, piece);
 
-  if tmpNumber > 0 then
+  if num > 0 then
   begin
     FProgressBar.Min := 0;
-    FProgressBar.Max := tmpNumber - 1;
+    FProgressBar.Max := num - 1;
     FProgressBar.Position := 0;
     FProgressBar.Visible := True;
-    for k := 0 to tmpNumber - 1 do
+    for k := 0 to num - 1 do
     begin
       FProgressBar.Position := k;
       Application.ProcessMessages;
-      tmpGame := TWuziChessGame.Create(Self);
-      tmpGame.IsTempGame := True;
-      tmpPoint := tmpData[k];
-      tmpGame.PlayAtMove(tmpPoint.x, tmpPoint.y, piece);
-      tmpCurrentNode := GStateTree.InsertTheNode(tmpGame, tmpPoint.x, tmpPoint.y, tmpCurrentNode);
+      game := TWuziChessGame.Create(Self);
+      game.IsTempGame := True;
+      point := points[k];
+      game.PlayAtMove(point.x, point.y, piece);
+      currentNode := GStateTree.InsertTheNode(game, point.x, point.y, currentNode);
 
-      self.NextLevel(level, piece, tmpPoint, tmpGame, GStateTree, tmpCurrentNode);
+      self.NextLevel(level, piece, point, game, GStateTree, currentNode);
 
-      tmpCurrentNode := tmpCurrentNode.parentNode;
+      currentNode := currentNode.parentNode;
     end;
     //return a optimal result by analyzing the state tree.
-    tmpPoint := Self.AnalyzeTheStateTree(GStateTree, Self.Turn);
-    x := tmpPoint.X;
-    y := tmpPoint.Y;
+    point := Self.AnalyzeTheStateTree(GStateTree, Self.Turn);
+    x := point.X;
+    y := point.Y;
     OutputDebugString(PChar(Format('Choose: %d, %d', [x + 1, y + 1])));
     Result := true;
-    FreeAndNil(tmpData);
+    FreeAndNil(points);
     GStateTree.Print;
     FreeAndNil(GStateTree);
     FProgressBar.Visible := False;
@@ -211,7 +211,7 @@ begin
   end else
   begin
     result := False;
-    FreeAndNil(tmpData);
+    FreeAndNil(points);
     GStateTree.Print;
     FreeAndNil(GStateTree);
     FProgressBar.Visible := False;
@@ -251,26 +251,26 @@ end;
 
 constructor TWuziChessGame.Create(wuziChess: TBoardGame);
 var
-  tmpGame: TWuziChessGame;
+  game: TWuziChessGame;
 begin
   inherited Create(wuziChess);
   if wuziChess is TWuziChessGame then
   begin
-    tmpGame := TWuziChessGame(wuziChess);
-    FGridColor := tmpGame.FGridColor;
-    FBlackColor := tmpGame.FBlackColor;
-    FWhiteColor := tmpGame.FWhiteColor;
-    FTurn := tmpGame.FTurn;
-    FLastMove := tmpGame.FLastMove;
-    FOldLastMove := tmpGame.FOldLastMove;
-    FOldAvailableMoveNumber := tmpGame.FOldAvailableMoveNumber;
+    game := TWuziChessGame(wuziChess);
+    FGridColor := game.FGridColor;
+    FBlackColor := game.FBlackColor;
+    FWhiteColor := game.FWhiteColor;
+    FTurn := game.FTurn;
+    FLastMove := game.FLastMove;
+    FOldLastMove := game.FOldLastMove;
+    FOldAvailableMoveNumber := game.FOldAvailableMoveNumber;
     if not FIsTempGame then
     begin
-      FOldAvailableMoveData := TListOfPoints.Create(tmpGame.FOldAvailableMoveData);
-      FAvailableMoveData := TListOfPoints.Create(tmpGame.FAvailableMoveData);
+      FOldAvailableMoveData := TListOfPoints.Create(game.FOldAvailableMoveData);
+      FAvailableMoveData := TListOfPoints.Create(game.FAvailableMoveData);
     end;
-    FProgressBar := tmpGame.FProgressBar;
-    FListBox := tmpGame.FListBox;
+    FProgressBar := game.FProgressBar;
+    FListBox := game.FListBox;
   end else
     OutputDebugString('Error!');
 end;
@@ -315,30 +315,30 @@ end;
 
 procedure TWuziChessGame.DrawAvailableMove;
 var
-  tmpI, tmpJ, k: Integer;
-  tmpPoint: TPoint;
-  tmpX, tmpY, tmpStartX, tmpStartY, tmpStartLenX, tmpStartLenY: Double;
+  i, j, k: Integer;
+  point: TPoint;
+  x, y, startX, startY, startLenX, startLenY: Double;
 begin
   if Self.IsTempGame then Exit;
   for k := 0 to FOldAvailableMoveNumber - 1 do
   begin
-    tmpPoint := FOldAvailableMoveData[k];
-    tmpI := tmpPoint.x;
-    tmpJ := tmpPoint.y;
-    DrawPiece(GetPiece(tmpI, tmpJ), tmpI, tmpJ);
+    point := FOldAvailableMoveData[k];
+    i := point.x;
+    j := point.y;
+    DrawPiece(GetPiece(i, j), i, j);
   end;
   if not IsPlaying then exit;
   for k := 0 to FAvailableMoveNumber - 1 do
   begin
-    tmpPoint := FAvailableMoveData[k];
-    tmpI := tmpPoint.x;
-    tmpJ := tmpPoint.y;
-    tmpX := IToX(tmpI);
-    tmpY := JToY(tmpJ);
-    tmpStartX := 3;
-    tmpStartY := 3;
-    tmpStartLenX := 5;
-    tmpStartLenY := 5;
+    point := FAvailableMoveData[k];
+    i := point.x;
+    j := point.y;
+    x := IToX(i);
+    y := JToY(j);
+    startX := 3;
+    startY := 3;
+    startLenX := 5;
+    startLenY := 5;
     with FPaintBox do
     begin
       if Turn = WHITE then
@@ -346,47 +346,47 @@ begin
       else
         Canvas.Pen.Color := COLOR_AVAILABLEMOVE_BLACK;
       Canvas.Pen.Width := 1;
-      Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY));
-      Canvas.LineTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY + tmpStartLenY));
-      Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY));
-      Canvas.LineTo(Trunc(tmpX + tmpStartX + tmpStartLenX), Trunc(tmpY + tmpStartY));
-      Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
-      Canvas.LineTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY - tmpStartLenY));
-      Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
-      Canvas.LineTo(Trunc(tmpX + tmpStartX + tmpStartLenX), Trunc(tmpY + FLenY - tmpStartY));
-      Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY));
-      Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX - tmpStartLenX), Trunc(tmpY + tmpStartY));
-      Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY));
-      Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY + tmpStartLenY));
-      Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
-      Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX - tmpStartLenX), Trunc(tmpY + FLenY - tmpStartY));
-      Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
-      Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY - tmpStartLenY));
+      Canvas.MoveTo(Trunc(x + startX), Trunc(y + startY));
+      Canvas.LineTo(Trunc(x + startX), Trunc(y + startY + startLenY));
+      Canvas.MoveTo(Trunc(x + startX), Trunc(y + startY));
+      Canvas.LineTo(Trunc(x + startX + startLenX), Trunc(y + startY));
+      Canvas.MoveTo(Trunc(x + startX), Trunc(y + FLenY - startY));
+      Canvas.LineTo(Trunc(x + startX), Trunc(y + FLenY - startY - startLenY));
+      Canvas.MoveTo(Trunc(x + startX), Trunc(y + FLenY - startY));
+      Canvas.LineTo(Trunc(x + startX + startLenX), Trunc(y + FLenY - startY));
+      Canvas.MoveTo(Trunc(x + FLenX - startX), Trunc(y + startY));
+      Canvas.LineTo(Trunc(x + FLenX - startX - startLenX), Trunc(y + startY));
+      Canvas.MoveTo(Trunc(x + FLenX - startX), Trunc(y + startY));
+      Canvas.LineTo(Trunc(x + FLenX - startX), Trunc(y + startY + startLenY));
+      Canvas.MoveTo(Trunc(x + FLenX - startX), Trunc(y + FLenY - startY));
+      Canvas.LineTo(Trunc(x + FLenX - startX - startLenX), Trunc(y + FLenY - startY));
+      Canvas.MoveTo(Trunc(x + FLenX - startX), Trunc(y + FLenY - startY));
+      Canvas.LineTo(Trunc(x + FLenX - startX), Trunc(y + FLenY - startY - startLenY));
     end;
   end;
 end;
 
 procedure TWuziChessGame.DrawBoard;
 var
-  tmpX, tmpY, i: Integer;
+  x, y, i: Integer;
 begin
   inherited;
   if Self.IsTempGame then Exit;
 
-  tmpX := FPaintBox.Width;
-  tmpY := FPaintBox.Height;
+  x := FPaintBox.Width;
+  y := FPaintBox.Height;
   with FPaintBox do
   begin
     Canvas.Brush.Color := FBackgroundColor;
     Canvas.Pen.Color := FGridColor;
     Canvas.Pen.Width := 1;
-    Canvas.Rectangle(0, 0, tmpX, tmpY);
+    Canvas.Rectangle(0, 0, x, y);
     for i := 0 to Self.FSizeX - 1 do
     begin
       Canvas.MoveTo(0, Trunc(FLenY * i));
-      Canvas.LineTo(tmpX, Trunc(FLenY * i));
+      Canvas.LineTo(x, Trunc(FLenY * i));
       Canvas.MoveTo(Trunc(FLenX * i), 0);
-      Canvas.LineTo(Trunc(FLenX * i), tmpY);
+      Canvas.LineTo(Trunc(FLenX * i), y);
     end;
   end;
 end;
@@ -394,43 +394,43 @@ end;
 
 procedure TWuziChessGame.DrawLastMove;
 var
-  tmpX, tmpY, tmpStartX, tmpStartY, tmpStartLenX, tmpStartLenY: Double;
+  x, y, startX, startY, startLenX, startLenY: Double;
 begin
   if Self.IsTempGame then Exit;
   DrawPiece(GetPiece(FOldLastMove.x, FOldLastMove.y), FOldLastMove.x, FOldLastMove.y);
   if not IsPlaying then exit;
-  tmpX := IToX(FLastMove.x);
-  tmpY := JToY(FLastMove.y);
-  tmpStartX := 3;
-  tmpStartY := 3;
-  tmpStartLenX := 5;
-  tmpStartLenY := 5;
+  x := IToX(FLastMove.x);
+  y := JToY(FLastMove.y);
+  startX := 3;
+  startY := 3;
+  startLenX := 5;
+  startLenY := 5;
   with FPaintBox do
   begin
     Canvas.Pen.Color := clRed;
     Canvas.Pen.Width := 3;
-    Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY));
-    Canvas.LineTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY + tmpStartLenY));
-    Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + tmpStartY));
-    Canvas.LineTo(Trunc(tmpX + tmpStartX + tmpStartLenX), Trunc(tmpY + tmpStartY));
-    Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
-    Canvas.LineTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY - tmpStartLenY));
-    Canvas.MoveTo(Trunc(tmpX + tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
-    Canvas.LineTo(Trunc(tmpX + tmpStartX + tmpStartLenX), Trunc(tmpY + FLenY - tmpStartY));
-    Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY));
-    Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX - tmpStartLenX), Trunc(tmpY + tmpStartY));
-    Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY));
-    Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + tmpStartY + tmpStartLenY));
-    Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
-    Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX - tmpStartLenX), Trunc(tmpY + FLenY - tmpStartY));
-    Canvas.MoveTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY));
-    Canvas.LineTo(Trunc(tmpX + FLenX - tmpStartX), Trunc(tmpY + FLenY - tmpStartY - tmpStartLenY));
+    Canvas.MoveTo(Trunc(x + startX), Trunc(y + startY));
+    Canvas.LineTo(Trunc(x + startX), Trunc(y + startY + startLenY));
+    Canvas.MoveTo(Trunc(x + startX), Trunc(y + startY));
+    Canvas.LineTo(Trunc(x + startX + startLenX), Trunc(y + startY));
+    Canvas.MoveTo(Trunc(x + startX), Trunc(y + FLenY - startY));
+    Canvas.LineTo(Trunc(x + startX), Trunc(y + FLenY - startY - startLenY));
+    Canvas.MoveTo(Trunc(x + startX), Trunc(y + FLenY - startY));
+    Canvas.LineTo(Trunc(x + startX + startLenX), Trunc(y + FLenY - startY));
+    Canvas.MoveTo(Trunc(x + FLenX - startX), Trunc(y + startY));
+    Canvas.LineTo(Trunc(x + FLenX - startX - startLenX), Trunc(y + startY));
+    Canvas.MoveTo(Trunc(x + FLenX - startX), Trunc(y + startY));
+    Canvas.LineTo(Trunc(x + FLenX - startX), Trunc(y + startY + startLenY));
+    Canvas.MoveTo(Trunc(x + FLenX - startX), Trunc(y + FLenY - startY));
+    Canvas.LineTo(Trunc(x + FLenX - startX - startLenX), Trunc(y + FLenY - startY));
+    Canvas.MoveTo(Trunc(x + FLenX - startX), Trunc(y + FLenY - startY));
+    Canvas.LineTo(Trunc(x + FLenX - startX), Trunc(y + FLenY - startY - startLenY));
   end;
 end;
 
 procedure TWuziChessGame.DrawPiece(piece: TPiece; i, j: integer);
 var
-  tmpX, tmpY: Double;
+  x, y: Double;
 begin
   if Self.IsTempGame then Exit;
   with FPaintBox do
@@ -438,11 +438,11 @@ begin
     Canvas.Pen.Color := FGridColor;
     Canvas.Pen.Width := 1;
     Canvas.Brush.Color := FBackgroundColor;
-    tmpX := IToX(i);
-    tmpY := JToY(j);
+    x := IToX(i);
+    y := JToY(j);
     FLenX := FPaintBox.Width div FSizeX;
     FLenY := FPaintBox.Height div FSizeY;
-    Canvas.Rectangle(Trunc(tmpX), Trunc(tmpY), Trunc(tmpX + FLenX), Trunc(tmpY + FLenY));
+    Canvas.Rectangle(Trunc(x), Trunc(y), Trunc(x + FLenX), Trunc(y + FLenY));
     if FBoard[i, j] <> PIECE_BLANK then
     begin
       if FBoard[i, j] = PIECE_WHITE then
@@ -451,9 +451,9 @@ begin
         Canvas.Brush.Color := FBlackColor;
       Canvas.Pen.Color := Canvas.Brush.Color;
       Canvas.Pen.Width := 1;
-      tmpX := IToX(i);
-      tmpY := JToY(j);
-      Canvas.Ellipse(Trunc(tmpX + 5), Trunc(tmpY + 5), Trunc(tmpX + FLenX - 5), Trunc(tmpY + FLenY - 5));
+      x := IToX(i);
+      y := JToY(j);
+      Canvas.Ellipse(Trunc(x + 5), Trunc(y + 5), Trunc(x + FLenX - 5), Trunc(y + FLenY - 5));
       if (i = FLastMove.x) and (j = FLastMove.y) then
         DrawLastMove();
     end;
@@ -464,7 +464,7 @@ function TWuziChessGame.GetAllAvailableMove(var data: TListOfPoints;
   piece: TPiece): Integer;
 var
   i, j: integer;
-  tmpPoint: TPoint;
+  point: TPoint;
 begin
   data := TListOfPoints.Create;
   data.Clear;
@@ -475,9 +475,9 @@ begin
       begin
         if IsAvailableMove(i, j, piece) then
         begin
-          tmpPoint.x := i;
-          tmpPoint.y := j;
-          data.Add(tmpPoint);
+          point.x := i;
+          point.y := j;
+          data.Add(point);
         end;
       end;
     end;
@@ -496,97 +496,97 @@ function TWuziChessGame.GoToLevel(var x, y: Integer;
   piece: TPiece): boolean;
 var
   k, k1, k2, k3, k4, k5, k6: Integer;
-  tmpNumber, tmpNumber1, tmpNumber2, tmpNumber3, tmpNumber4, tmpNumber5, tmpNumber6: Integer;
-  tmpData, tmpData1, tmpData2, tmpData3, tmpData4, tmpData5, tmpData6: TListOfPoints;
-  tmpGame, tmpGame1, tmpGame2, tmpGame3, tmpGame4, tmpGame5, tmpGame6: TWuziChessGame;
+  number, number1, number2, number3, number4, number5, number6: Integer;
+  data, data1, data2, data3, data4, data5, data6: TListOfPoints;
+  game, game1, game2, game3, game4, game5, game6: TWuziChessGame;
 
-  tmpCurrentNode: TStateNode;
-  tmpPoint: TPoint;
-  tmpHead: TBoardGame;
+  currentNode: TStateNode;
+  point: TPoint;
+  head: TBoardGame;
 begin
   //create the State Tree and save all possible chess state into the tree
   OutputDebugString('Analyzing by loop...');
 
-  tmpHead := TWuziChessGame.Create(Self);
-  GStateTree := TWuziChessStateTree.Create(tmpHead);
+  head := TWuziChessGame.Create(Self);
+  GStateTree := TWuziChessStateTree.Create(head);
   GStateTree.ListBox := Self.ListBox;
-  tmpCurrentNode := GStateTree.Head;
+  currentNode := GStateTree.Head;
 
   //get all possible moves for piece.
-  tmpNumber := GetAllAvailableMove(tmpData, piece);
+  number := GetAllAvailableMove(data, piece);
 
-  if tmpNumber > 0 then
+  if number > 0 then
   begin
     FProgressBar.Min := 0;
-    FProgressBar.Max := tmpNumber - 1;
+    FProgressBar.Max := number - 1;
     FProgressBar.Position := 0;
     FProgressBar.Visible := True;
-    for k := 0 to tmpNumber - 1 do
+    for k := 0 to number - 1 do
     begin
       FProgressBar.Position := k;
       Application.ProcessMessages;
-      tmpGame := TWuziChessGame.Create(Self);
-      tmpGame.IsTempGame := True;
-      tmpPoint := tmpData[k];
-      tmpGame.PlayAtMove(tmpPoint.x, tmpPoint.y, piece);
-      tmpCurrentNode := GStateTree.InsertTheNode(tmpGame, tmpPoint.x, tmpPoint.y, tmpCurrentNode);
+      game := TWuziChessGame.Create(Self);
+      game.IsTempGame := True;
+      point := data[k];
+      game.PlayAtMove(point.x, point.y, piece);
+      currentNode := GStateTree.InsertTheNode(game, point.x, point.y, currentNode);
 
       //==========Level 1=============
       //get all possible moves for the opponent of piece.
-      tmpNumber1 := tmpGame.GetAllAvailableMove(tmpData1, TWuziChessGame.GetOpponent(piece));
-      if tmpNumber1 > 0 then
+      number1 := game.GetAllAvailableMove(data1, TWuziChessGame.GetOpponent(piece));
+      if number1 > 0 then
       begin
-        for k1 := 0 to tmpNumber1 - 1 do
+        for k1 := 0 to number1 - 1 do
         begin
-          tmpGame1 := TWuziChessGame.Create(tmpGame);
-          tmpGame1.IsTempGame := True;
-          tmpPoint := tmpData1[k1];
-          tmpGame1.PlayAtMove(tmpPoint.x, tmpPoint.y, TWuziChessGame.GetOpponent(piece
+          game1 := TWuziChessGame.Create(game);
+          game1.IsTempGame := True;
+          point := data1[k1];
+          game1.PlayAtMove(point.x, point.y, TWuziChessGame.GetOpponent(piece
           ));
-          tmpPoint := tmpData[k];
-          tmpCurrentNode := GStateTree.InsertTheNode(tmpGame1, tmpPoint.x, tmpPoint.y, tmpCurrentNode);
+          point := data[k];
+          currentNode := GStateTree.InsertTheNode(game1, point.x, point.y, currentNode);
 
           //get all possible moves for the piece
-          tmpNumber2 := tmpGame1.GetAllAvailableMove(tmpData2, piece);
-          if tmpNumber2 > 0 then
+          number2 := game1.GetAllAvailableMove(data2, piece);
+          if number2 > 0 then
           begin
-            for k2 := 0 to tmpNumber2 - 1 do
+            for k2 := 0 to number2 - 1 do
             begin
-              tmpGame2 := TWuziChessGame.Create(tmpGame1);
-              tmpGame2.IsTempGame := True;
-              tmpPoint := tmpData2[k2];
-              tmpGame2.PlayAtMove(tmpPoint.X, tmpPoint.Y, piece);
-              tmpPoint := tmpData[k];
-              tmpCurrentNode := GStateTree.InsertTheNode(tmpGame2, tmpPoint.X, tmpPoint.Y, tmpCurrentNode);
+              game2 := TWuziChessGame.Create(game1);
+              game2.IsTempGame := True;
+              point := data2[k2];
+              game2.PlayAtMove(point.X, point.Y, piece);
+              point := data[k];
+              currentNode := GStateTree.InsertTheNode(game2, point.X, point.Y, currentNode);
 
               //==============Level 2===============
 
               //get all possible moves for the opponent of piece
-              tmpNumber3 := tmpGame2.GetAllAvailableMove(tmpData3, TWuziChessGame.GetOpponent(piece
+              number3 := game2.GetAllAvailableMove(data3, TWuziChessGame.GetOpponent(piece
               ));
-              if tmpNumber3 > 0 then
+              if number3 > 0 then
               begin
-                for k3 := 0 to tmpNumber3 - 1 do
+                for k3 := 0 to number3 - 1 do
                 begin
-                  tmpGame3 := TWuziChessGame.Create(tmpGame2);
-                  tmpGame3.IsTempGame := True;
-                  tmpPoint := tmpData3[k3];
-                  tmpGame3.PlayAtMove(tmpPoint.X, tmpPoint.Y, TWuziChessGame.GetOpponent(piece));
-                  tmpPoint := tmpData[k];
-                  tmpCurrentNode := GStateTree.InsertTheNode(tmpGame3, tmpPoint.X, tmpPoint.Y, tmpCurrentNode);
+                  game3 := TWuziChessGame.Create(game2);
+                  game3.IsTempGame := True;
+                  point := data3[k3];
+                  game3.PlayAtMove(point.X, point.Y, TWuziChessGame.GetOpponent(piece));
+                  point := data[k];
+                  currentNode := GStateTree.InsertTheNode(game3, point.X, point.Y, currentNode);
 
                   //get all possible moves for piece
-                  tmpNumber4 := tmpGame3.GetAllAvailableMove(tmpData4, piece);
-                  if tmpNumber4 > 0 then
+                  number4 := game3.GetAllAvailableMove(data4, piece);
+                  if number4 > 0 then
                   begin
-                    for k4 := 0 to tmpNumber4 - 1 do
+                    for k4 := 0 to number4 - 1 do
                     begin
-                      tmpGame4 := TWuziChessGame.Create(tmpGame3);
-                      tmpGame4.IsTempGame := True;
-                      tmpPoint := tmpData4[k4];
-                      tmpGame4.PlayAtMove(tmpPoint.X, tmpPoint.Y, piece);
-                      tmpPoint := tmpData[k];
-                      tmpCurrentNode := GStateTree.InsertTheNode(tmpGame4, tmpPoint.X, tmpPoint.Y, tmpCurrentNode);
+                      game4 := TWuziChessGame.Create(game3);
+                      game4.IsTempGame := True;
+                      point := data4[k4];
+                      game4.PlayAtMove(point.X, point.Y, piece);
+                      point := data[k];
+                      currentNode := GStateTree.InsertTheNode(game4, point.X, point.Y, currentNode);
                       {
                       //================Level 3 begin================
                       //get all possible moves for the opponent of piece
@@ -624,34 +624,34 @@ begin
                       FreeAndNil(tmpData5);
                       //==============Level 3 end============
                       }
-                      tmpCurrentNode := tmpCurrentNode.parentNode;
+                      currentNode := currentNode.parentNode;
                     end;
                   end;
-                  FreeAndNil(tmpData4);
-                  tmpCurrentNode := tmpCurrentNode.parentNode;
+                  FreeAndNil(data4);
+                  currentNode := currentNode.parentNode;
                 end;
               end;
-              FreeAndNil(tmpData3);
+              FreeAndNil(data3);
               //================Level 2 end================
-              tmpCurrentNode := tmpCurrentNode.parentNode;
+              currentNode := currentNode.parentNode;
             end;
           end;
-          FreeAndNil(tmpData2);
-          tmpCurrentNode := tmpCurrentNode.parentNode;
+          FreeAndNil(data2);
+          currentNode := currentNode.parentNode;
         end;
       end;
-      FreeAndNil(tmpData1);
+      FreeAndNil(data1);
       //==================Level 1 end=================
-      tmpCurrentNode := tmpCurrentNode.parentNode;
+      currentNode := currentNode.parentNode;
     end;
 
     //return a optimal result by analyzing the state tree.
-    tmpPoint := Self.AnalyzeTheStateTree(GStateTree, Self.Turn);
-    x := tmpPoint.X;
-    y := tmpPoint.Y;
+    point := Self.AnalyzeTheStateTree(GStateTree, Self.Turn);
+    x := point.X;
+    y := point.Y;
     OutputDebugString(PChar(Format('Choose: %d, %d', [x + 1, y + 1])));
     Result := true;
-    FreeAndNil(tmpData);
+    FreeAndNil(data);
     GStateTree.Print;
     FreeAndNil(GStateTree);
     FProgressBar.Visible := False;
@@ -659,7 +659,7 @@ begin
   end else
   begin
     result := False;
-    FreeAndNil(tmpData);
+    FreeAndNil(data);
     GStateTree.Print;
     FreeAndNil(GStateTree);
     FProgressBar.Visible := False;
@@ -693,53 +693,53 @@ procedure TWuziChessGame.NextLevel(const totalLevel: Integer;
   piece: TPiece; const step: TPoint; gameOld: TWuziChessGame;
   var stateTree: TStateTree; var currentNode: TStateNode);
 var
-  tmpNumberOld, tmpNumberNew: Integer;
+  oldNum, newNum: Integer;
   kOld, kNew: Integer;
-  tmpGameOld, tmpGameNew: TWuziChessGame;
-  tmpDataOld, tmpDataNew: TListOfPoints;
-  tmpPoint: TPoint;
+  oldGame, newGame: TWuziChessGame;
+  oldData, newData: TListOfPoints;
+  point: TPoint;
 begin
   if TStateTree.getLevel(currentNode) >= 2 * totalLevel then
     exit;
 
-  tmpGameOld := gameOld;
+  oldGame := gameOld;
   //get all possible moves for the opponent of piece
-  tmpNumberOld := tmpGameOld.GetAllAvailableMove(tmpDataOld, TWuziChessGame.GetOpponent(piece));
-  if tmpNumberOld > 0 then
+  oldNum := oldGame.GetAllAvailableMove(oldData, TWuziChessGame.GetOpponent(piece));
+  if oldNum > 0 then
   begin
-    for kOld := 0 to tmpNumberOld - 1 do
+    for kOld := 0 to oldNum - 1 do
     begin
-      tmpGameNew := TWuziChessGame.Create(tmpGameOld);
-      tmpGameNew.IsTempGame := True;
-      tmpPoint := tmpDataOld[kOld];
-      tmpGameNew.PlayAtMove(tmpPoint.x, tmpPoint.y, TWuziChessGame.GetOpponent(piece));
-      currentNode := GStateTree.InsertTheNode(tmpGameNew, tmpPoint.x, tmpPoint.y, currentNode);
+      newGame := TWuziChessGame.Create(oldGame);
+      newGame.IsTempGame := True;
+      point := oldData[kOld];
+      newGame.PlayAtMove(point.x, point.y, TWuziChessGame.GetOpponent(piece));
+      currentNode := GStateTree.InsertTheNode(newGame, point.x, point.y, currentNode);
 
       //get all possible moves for piece
-      tmpNumberNew := tmpGameNew.GetAllAvailableMove(tmpDataNew, piece);
-      if tmpNumberNew > 0 then
+      newNum := newGame.GetAllAvailableMove(newData, piece);
+      if newNum > 0 then
       begin
-        for kNew := 0 to tmpNumberNew - 1 do
+        for kNew := 0 to newNum - 1 do
         begin
-          tmpGameOld := TWuziChessGame.Create(tmpGameNew);
-          tmpGameOld.IsTempGame := True;
-          tmpPoint := tmpDataNew[kNew];
-          tmpGameOld.PlayAtMove(tmpPoint.X, tmpPoint.Y, piece);
-          tmpPoint := step;
+          oldGame := TWuziChessGame.Create(newGame);
+          oldGame.IsTempGame := True;
+          point := newData[kNew];
+          oldGame.PlayAtMove(point.X, point.Y, piece);
+          point := step;
 //          self.Print(currentNode);
-          currentNode := GStateTree.InsertTheNode(tmpGameOld, tmpPoint.X, tmpPoint.Y, currentNode);
+          currentNode := GStateTree.InsertTheNode(oldGame, point.X, point.Y, currentNode);
 //          self.Print(currentNode);
           if TStateTree.getLevel(currentNode) < 2 * totalLevel then
-            self.NextLevel(totalLevel, piece, step, tmpGameOld, stateTree, currentNode);
+            self.NextLevel(totalLevel, piece, step, oldGame, stateTree, currentNode);
           currentNode := currentNode.parentNode;
         end;
       end;
-      FreeAndNil(tmpDataNew);
+      FreeAndNil(newData);
 
       currentNode := currentNode.parentNode;
     end;
   end;
-  FreeAndNil(tmpDataOld);
+  FreeAndNil(oldData);
 end;
 
 procedure TWuziChessGame.PlayAtMove(i, j: Integer; piece: TPiece);
@@ -758,10 +758,10 @@ end;
 
 procedure TWuziChessGame.Print(node: TStateNode);
 var
-  tmpLevel: Integer;
+  lvl: Integer;
 begin
-  tmpLevel := TStateTree.getLevel(node);
-  OutputDebugString(PChar(Format('CurrentNode.level: %d', [tmpLevel])));
+  lvl := TStateTree.getLevel(node);
+  OutputDebugString(PChar(Format('CurrentNode.level: %d', [lvl])));
 end;
 
 procedure TWuziChessGame.Refresh;
@@ -805,43 +805,43 @@ end;
 
 function TWuziChessGame.GetPiecesNumber(piece: TPiece): Integer;
 var
-  tmpCount, i, j: Integer;
+  count, i, j: Integer;
 begin
-  tmpCount := 0;
+  count := 0;
   for i := 0 to FSizeX - 1 do
     for j := 0 to FSizeY - 1 do
     begin
-      if FBoard[i, j] = piece then inc(tmpCount);
+      if FBoard[i, j] = piece then inc(count);
     end;
-  result := tmpCount;
+  result := count;
 end;
 
 //these two methods defines the rule of the game!!!!
 function TWuziChessGame.TimeToCheck: Boolean;
 var
-  i, j, one, two, tmpI, tmpJ: integer;
-  tmpChess: TPiece;
-  tmpPos: TPoint;
+  i, j, one, two, m, n: integer;
+  chess: TPiece;
+  pos: TPoint;
 begin
   result := false;
   //判断水平方向是否有连续五子
   one := 1;
   two := 0;
-  tmpPos := Self.LastMove;
-  OutputDebugString(PChar(Format('x: %d, y: %d', [tmpPos.X + 1, tmpPos.y + 1])));
-  tmpI := tmpPos.x;
-  tmpJ := tmpPos.y;
-  tmpChess := Self.GetPiece(tmpI, tmpJ);
+  pos := Self.LastMove;
+  OutputDebugString(PChar(Format('x: %d, y: %d', [pos.X + 1, pos.y + 1])));
+  m := pos.x;
+  n := pos.y;
+  chess := Self.GetPiece(m, n);
   for i := 1 to 4 do
   begin
-    if (tmpI + i <= NUMBER_X - 1) and (Self.GetPiece(tmpI + i, tmpJ) = tmpChess) then
+    if (m + i <= NUMBER_X - 1) and (Self.GetPiece(m + i, n) = chess) then
       inc(one)
     else
       break;
   end;
   for i := 1 to 4 do
   begin
-    if (tmpI - i >= 0) and (Self.GetPiece(tmpI - i, tmpJ) = tmpChess) then
+    if (m - i >= 0) and (Self.GetPiece(m - i, n) = chess) then
       inc(two)
     else
       break;
@@ -857,14 +857,14 @@ begin
   two := 0;
   for j := 1 to 4 do
   begin
-    if (tmpJ + j <= NUMBER_Y - 1) and (Self.GetPiece(tmpI, tmpJ + j) = tmpChess) then
+    if (n + j <= NUMBER_Y - 1) and (Self.GetPiece(m, n + j) = chess) then
       inc(one)
     else
       break;
   end;
   for j := 1 to 4 do
   begin
-    if (tmpJ - j >= 0) and (Self.GetPiece(tmpI, tmpJ - j) = tmpChess) then
+    if (n - j >= 0) and (Self.GetPiece(m, n - j) = chess) then
       inc(two)
     else
       break;
@@ -880,14 +880,14 @@ begin
   two := 0;
   for i := 1 to 4 do
   begin
-    if (tmpI + i <= NUMBER_X - 1) and (tmpJ + i <= NUMBER_Y - 1) and (Self.GetPiece(tmpI + i, tmpJ + i) = tmpChess) then
+    if (m + i <= NUMBER_X - 1) and (n + i <= NUMBER_Y - 1) and (Self.GetPiece(m + i, n + i) = chess) then
       inc(one)
     else
       break;
   end;
   for i := 1 to 4 do
   begin
-    if (tmpI - i >= 0) and (tmpJ - i >= 0) and (Self.GetPiece(tmpI - i, tmpJ - i) = tmpChess) then
+    if (m - i >= 0) and (n - i >= 0) and (Self.GetPiece(m - i, n - i) = chess) then
       inc(two)
     else
       break;
@@ -903,14 +903,14 @@ begin
   two := 0;
   for i := 1 to 4 do
   begin
-    if (tmpI - i >= 0) and (tmpJ + i <= NUMBER_Y - 1) and (Self.GetPiece(tmpI - i, tmpJ + i) = tmpChess) then
+    if (m - i >= 0) and (n + i <= NUMBER_Y - 1) and (Self.GetPiece(m - i, n + i) = chess) then
       inc(one)
     else
       break;
   end;
   for i := 1 to 4 do
   begin
-    if (tmpI + i <= NUMBER_X - 1) and (tmpJ - i >= 0) and (Self.GetPiece(tmpI + i, tmpJ - i) = tmpChess) then
+    if (m + i <= NUMBER_X - 1) and (n - i >= 0) and (Self.GetPiece(m + i, n - i) = chess) then
       inc(two)
     else
       break;

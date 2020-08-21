@@ -22,39 +22,39 @@ uses
 procedure TWuziChessStateTree.PrintNode(node: TStateNode;
   var list: TStringList);
 var
-  tmpString, tmpStringTurn: String;
-  tmpLevel: Integer;
+  str, strTurn: String;
+  lvl: Integer;
   i: Integer;
-  tmpGame: TWuziChessGame;
-  tmpLastMove: TPoint;
-  tmpNumberOfBlack, tmpNumberOfBlank, tmpNumberOfWhite, tmpResult: Integer;
+  game: TWuziChessGame;
+  lastMove: TPoint;
+  blackCount, blankCount, whiteCount, res: Integer;
 begin
   inherited;
   if node <> nil then
   begin
-    tmpString := '|';
-    tmpLevel := getLevel(node);
-    tmpGame := TWuziChessGame(node.data);
-    tmpNumberOfBlack := tmpGame.GetPiecesNumber(PIECE_BLACK);
-    tmpNumberOfWhite := tmpGame.GetPiecesNumber(PIECE_WHITE);
-    tmpNumberOfBlank := tmpGame.GetPiecesNumber(PIECE_BLANK);
-    tmpResult := tmpNumberOfBlack - tmpNumberOfWhite;
-    tmpLastMove := tmpGame.LastMove;
-    for i := 0 to tmpLevel - 1 do
+    str := '|';
+    lvl := getLevel(node);
+    game := TWuziChessGame(node.data);
+    blackCount := game.GetPiecesNumber(PIECE_BLACK);
+    whiteCount := game.GetPiecesNumber(PIECE_WHITE);
+    blankCount := game.GetPiecesNumber(PIECE_BLANK);
+    res := blackCount - whiteCount;
+    lastMove := game.LastMove;
+    for i := 0 to lvl - 1 do
     begin
-      tmpString := tmpString + '-----|';
+      str := str + '-----|';
     end;
-    if tmpGame.LastTurn = BLACK then
+    if game.LastTurn = BLACK then
     begin
-      tmpStringTurn := 'BLACK';
+      strTurn := 'BLACK';
     end
     else
     begin
-      tmpStringTurn := 'WHITE';
-      tmpResult := tmpResult * -1;
+      strTurn := 'WHITE';
+      res := res * -1;
     end;
-    list.Add(tmpString + Format(' [%x] %s Played at (%d, %d) -> (White: %d, Black: %d, Blank: %d) - (Result: %d)',
-          [Integer(node), tmpStringTurn, tmpLastMove.X + 1, tmpLastMove.Y + 1, tmpNumberOfWhite, tmpNumberOfBlack, tmpNumberOfBlank, tmpResult]));
+    list.Add(str + Format(' [%x] %s Played at (%d, %d) -> (White: %d, Black: %d, Blank: %d) - (Result: %d)',
+          [Integer(node), strTurn, lastMove.X + 1, lastMove.Y + 1, whiteCount, blackCount, blankCount, res]));
   end;
 end;
 
