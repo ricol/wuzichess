@@ -38,7 +38,7 @@ implementation
 { TStateTree }
 
 function CompareNodes(const node1, node2: TStateNode): Integer;
-  var
+var
   lvl1, lvl2: Integer;
 begin
   lvl1 := TStateTree.getLevel(node1);
@@ -49,12 +49,15 @@ end;
 constructor TStateTree.Create(var initialGame: TBoardGame);
 begin
   inherited Create();
-  head := TStateNode.Create;
-  head.data := initialGame;
-  head.step_i := -1;
-  head.step_j := -1;
-  head.parentNode := nil;
-  head.nextNodes := nil;
+  Head := TStateNode.Create;
+  with Head do
+  begin
+    data := initialGame;
+    step_i := -1;
+    step_j := -1;
+    parentNode := nil;
+    nextNodes := nil;
+  end;
 end;
 
 destructor TStateTree.Destroy;
@@ -74,9 +77,11 @@ begin
   begin
     if LevelPriority then
     begin
-      Result := getAllChildrenNodesForTheNode(node, False);
-      Result.Sort(TComparer<TStateNode>.Construct(CompareNodes));
-    end else begin
+      result := getAllChildrenNodesForTheNode(node, False);
+      result.Sort(TComparer<TStateNode>.Construct(CompareNodes));
+    end
+    else
+    begin
       nextNodes := node.nextNodes;
       if nextNodes <> nil then
       begin
@@ -84,11 +89,11 @@ begin
         list.Clear;
         for i := 0 to nextNodes.Count - 1 do
         begin
-          list.Add(nextNodes[i]);  //add the current one to the list
+          list.Add(nextNodes[i]); // add the current one to the list
           nodes := getAllChildrenNodesForTheNode(nextNodes[i], LevelPriority);
           if nodes <> nil then
           begin
-            //add all children nodes to the list
+            // add all children nodes to the list
             for j := 0 to nodes.Count - 1 do
             begin
               list.Add(nodes[j]);
@@ -96,14 +101,18 @@ begin
             FreeAndNil(nodes);
           end;
         end;
-        Result := list;
+        result := list;
         exit;
-      end else begin
+      end
+      else
+      begin
         result := TListOfNodes.Create;
         exit;
       end;
     end;
-  end else begin
+  end
+  else
+  begin
     result := TListOfNodes.Create;
     exit;
   end;
@@ -116,11 +125,11 @@ var
   node: TStateNode;
   list: TList<TStateNode>;
 begin
-  if head <> nil then
+  if Head <> nil then
   begin
     allNodes := getAllNodes(LevelPriority);
 
-//    OutputDebugString(PChar(getLevelInfor(tmpArray_AllNodes)));
+    // OutputDebugString(PChar(getLevelInfor(tmpArray_AllNodes)));
 
     list := TList<TStateNode>.Create();
     for i := 0 to allNodes.Count - 1 do
@@ -130,12 +139,14 @@ begin
         list.Add(node);
     end;
 
-//    OutputDebugString(PChar(getLevelInfor(tmpList)));
+    // OutputDebugString(PChar(getLevelInfor(tmpList)));
 
     FreeAndNil(allNodes);
-    Result := list;
-    Exit;
-  end else begin
+    result := list;
+    exit;
+  end
+  else
+  begin
     result := TListOfNodes.Create;
     exit;
   end;
@@ -143,12 +154,13 @@ end;
 
 function TStateTree.getAllNodes(LevelPriority: Boolean): TListOfNodes;
 begin
-  if head <> nil then
+  if Head <> nil then
   begin
-    Result := getAllChildrenNodesForTheNode(head, LevelPriority);
-    Result.Insert(0, head);
+    result := getAllChildrenNodesForTheNode(Head, LevelPriority);
+    result.Insert(0, Head);
     exit;
-  end else
+  end
+  else
   begin
     result := TListOfNodes.Create;
     exit;
@@ -161,18 +173,21 @@ var
   nextNodes: TListOfNodes;
 begin
   nodeNew := TStateNode.Create;
-  nodeNew.parentNode := InsertUnderTheNode;
-  nodeNew.data := ValueForTheNode;
-  nodeNew.step_i := i;
-  nodeNew.step_j := j;
-  nodeNew.nextNodes := nil;
+  with nodeNew do
+  begin
+    parentNode := InsertUnderTheNode;
+    data := ValueForTheNode;
+    step_i := i;
+    step_j := j;
+    nextNodes := nil;
+  end;
 
   nextNodes := InsertUnderTheNode.nextNodes;
   if nextNodes = nil then
     nextNodes := TListOfNodes.Create();
   nextNodes.Add(nodeNew);
   InsertUnderTheNode.nextNodes := nextNodes;
-  Result := nodeNew;
+  result := nodeNew;
 end;
 
 procedure TStateTree.Print;
@@ -181,7 +196,7 @@ var
 begin
   // Print the State Tree
   if not GShowStateTreeInfor then
-    Exit;
+    exit;
   if Self.ListBox <> nil then
   begin
     list := TStringList.Create;
@@ -223,11 +238,11 @@ var
 begin
   if node <> nil then
   begin
-    //release children nodes first
+    // release children nodes first
     nextNode := node.nextNodes;
     if nextNode <> nil then
     begin
-      //release each child node one by one
+      // release each child node one by one
       for i := 0 to nextNode.Count - 1 do
       begin
         n := nextNode[i];
@@ -248,7 +263,7 @@ begin
   lvl := 0;
   if node = nil then
   begin
-    Result := -1;
+    result := -1;
     exit;
   end;
   n := node.parentNode;
@@ -257,7 +272,7 @@ begin
     inc(lvl);
     n := n.parentNode;
   end;
-  Result := lvl;
+  result := lvl;
 end;
 
 function TStateTree.getLevelInfor(listOfNodes: TListOfNodes): String;
@@ -272,7 +287,7 @@ begin
     node := listOfNodes[i];
     s := s + Format('%d', [getLevel(node)]);
   end;
-  Result := s;
+  result := s;
 end;
 
 procedure TStateTree.SetCurrent(const Value: TStateNode);

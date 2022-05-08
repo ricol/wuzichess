@@ -52,8 +52,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure PaintBoxMainPaint(Sender: TObject);
     procedure MenuHelp_AboutClick(Sender: TObject);
-    procedure PaintBoxMainMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure PaintBoxMainMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure MenuGame_NewGameClick(Sender: TObject);
     procedure MenuGame_ExitClick(Sender: TObject);
     procedure MenuGame_CloseGameClick(Sender: TObject);
@@ -86,7 +85,7 @@ var
 
 procedure TFormMain.Autoplay(way: TWay);
 var
-  i, j, num: integer;
+  i, j, num: Integer;
   canMove: Boolean;
   points: TListOfPoints;
 begin
@@ -94,7 +93,7 @@ begin
     Exit;
   if GGame.Turn = WHITE then
   begin
-    canMove := GGame.AutoPlay(i, j, PIECE_WHITE, way);
+    canMove := GGame.Autoplay(i, j, PIECE_WHITE, way);
     if canMove then
     begin
       GGame.PlayAtMove(i, j, PIECE_WHITE);
@@ -104,24 +103,30 @@ begin
         num := GGame.GetAllAvailableMove(points, PIECE_WHITE);
         if num = 0 then
         begin
-          //if myself can not move either then it is time to check the game
+          // if myself can not move either then it is time to check the game
           GGame.EndGameAndPrint;
           GGame.IsPlaying := False;
           MenuGame_NewGame.Enabled := True;
           MenuGame_CloseGame.Enabled := False;
-          exit;
-        end else begin
+          Exit;
+        end
+        else
+        begin
           GGame.Turn := WHITE;
           ShowMessage('White Continue.');
         end;
-      end else
+      end
+      else
         GGame.Turn := BLACK;
-    end else
+    end
+    else
     begin
       ShowMessage('No more move for white!');
     end;
-  end else begin
-    canMove := GGame.AutoPlay(i, j, PIECE_BLACK, way);
+  end
+  else
+  begin
+    canMove := GGame.Autoplay(i, j, PIECE_BLACK, way);
     if canMove then
     begin
       GGame.PlayAtMove(i, j, PIECE_BLACK);
@@ -131,19 +136,23 @@ begin
         num := GGame.GetAllAvailableMove(points, PIECE_BLACK);
         if num = 0 then
         begin
-          //if myself can not move either then it is time to check the game
+          // if myself can not move either then it is time to check the game
           GGame.EndGameAndPrint;
           GGame.IsPlaying := False;
           MenuGame_NewGame.Enabled := True;
           MenuGame_CloseGame.Enabled := False;
-          exit;
-        end else begin
+          Exit;
+        end
+        else
+        begin
           GGame.Turn := BLACK;
           ShowMessage('Black continue.');
         end;
-      end else
+      end
+      else
         GGame.Turn := WHITE;
-    end else
+    end
+    else
       ShowMessage('No more move for black!');
   end;
 
@@ -164,24 +173,26 @@ end;
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   Randomize;
-  GGame := TWuziChessGame.Create(Self.PaintBoxMain, NUMBER_X, NUMBER_Y, False);
-  GGame.ProgressBar := Self.ProgressBar1;
-
-  ProgressBar1.Parent := Self.StatusBar1;
-  ProgressBar1.Left := 50;
-  ProgressBar1.Top := 2;
-  ProgressBar1.Width := Self.StatusBar1.Panels[0].Width - 50;
-  ProgressBar1.Smooth := True;
-  ProgressBar1.Min := 0;
-  ProgressBar1.Max := 100;
-  ProgressBar1.Position := 0;
-  ProgressBar1.Visible := False;
+  GGame := TWuziChessGame.Create(self.PaintBoxMain, NUMBER_X, NUMBER_Y, False);
+  GGame.ProgressBar := self.ProgressBar1;
+  with ProgressBar1 do
+  begin
+    Parent := self.StatusBar1;
+    Left := 50;
+    Top := 2;
+    Width := self.StatusBar1.Panels[0].Width - 50;
+    Smooth := True;
+    Min := 0;
+    Max := 100;
+    Position := 0;
+    Visible := False;
+  end;
 
   FreeAndNil(GFormData);
   GFormData := TFormStateTreeData.Create(self);
-//  GFormData.Show;
-  GFormData.Left := Self.Left + Self.Width + 5;
-  GFormData.Top := Self.Top;
+  // GFormData.Show;
+  GFormData.Left := self.Left + self.Width + 5;
+  GFormData.Top := self.Top;
 
   GGame.ListBox := GFormData.ListBoxMain;
 end;
@@ -196,8 +207,8 @@ procedure TFormMain.FormResize(Sender: TObject);
 begin
   if GGame <> nil then
   begin
-    GGame.LenX := Self.PaintBoxMain.Width div NUMBER_X;
-    GGame.LenY := Self.PaintBoxMain.Height div NUMBER_Y;
+    GGame.LenX := self.PaintBoxMain.Width div NUMBER_X;
+    GGame.LenY := self.PaintBoxMain.Height div NUMBER_Y;
     GGame.Refresh;
   end;
 end;
@@ -237,30 +248,33 @@ begin
   GGame.About;
 end;
 
-procedure TFormMain.PaintBoxMainMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TFormMain.PaintBoxMainMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-  i, j: integer;
+  i, j: Integer;
   piece: TPiece;
 begin
-  //check whether the game is playing
-  if not GGame.IsPlaying then Exit;
-  //get current position
+  // check whether the game is playing
+  if not GGame.IsPlaying then
+    Exit;
+  // get current position
   i := GGame.XToI(X);
   j := GGame.YToJ(Y);
 
-  if not GGame.IsValidIJ(i, j) then Exit;
+  if not GGame.IsValidIJ(i, j) then
+    Exit;
 
   piece := PIECE_WHITE;
   if not GGame.IsAvailableMove(i, j, piece) then
   begin
-    //it is not a available move
+    // it is not a available move
     Beep;
     Exit;
-  end else begin
-    //it is a available move
+  end
+  else
+  begin
+    // it is a available move
     GGame.PlayAtMove(i, j, piece);
-//    StatusBar1.Panels[1].Text := Format('Status: %d(Black) - %d(White)', [GGame.GetPiecesNumber(PIECE_BLACK), GGame.GetPiecesNumber(PIECE_WHITE)]);
+    // StatusBar1.Panels[1].Text := Format('Status: %d(Black) - %d(White)', [GGame.GetPiecesNumber(PIECE_BLACK), GGame.GetPiecesNumber(PIECE_WHITE)]);
     if GGame.TimeToCheck then
     begin
       Windows.Beep(2000, 50);
@@ -268,20 +282,22 @@ begin
       GGame.IsPlaying := False;
       MenuGame_NewGame.Enabled := True;
       MenuGame_CloseGame.Enabled := False;
-      exit;
-    end else begin
-      //time for the opponent which is the computer to move
+      Exit;
+    end
+    else
+    begin
+      // time for the opponent which is the computer to move
       GGame.Turn := BLACK;
       piece := PIECE_BLACK;
       repeat
         GGame.DrawAllAvailableMoves(GGame.Turn);
         Application.ProcessMessages;
         Sleep(DELAYTIME);
-        if GGame.AutoPlay(i, j, piece, RECURSIVE) then
+        if GGame.Autoplay(i, j, piece, RECURSIVE) then
         begin
           GGame.PlayAtMove(i, j, piece);
-//          StatusBar1.Panels[1].Text := Format('Status: %d(Black) - %d(White)', [GGame.GetPiecesNumber(PIECE_BLACK), GGame.GetPiecesNumber(PIECE_WHITE)]);
-          //the opponent played, then check whether myself can move
+          // StatusBar1.Panels[1].Text := Format('Status: %d(Black) - %d(White)', [GGame.GetPiecesNumber(PIECE_BLACK), GGame.GetPiecesNumber(PIECE_WHITE)]);
+          // the opponent played, then check whether myself can move
           if GGame.TimeToCheck then
           begin
             Windows.Beep(2000, 50);
@@ -289,12 +305,16 @@ begin
             GGame.IsPlaying := False;
             MenuGame_NewGame.Enabled := True;
             MenuGame_CloseGame.Enabled := False;
-            exit;
-          end else break;
-        end else begin
-          MessageBox(Self.Handle, 'Should not happen!', 'Warning', MB_OK or MB_ICONINFORMATION);
+            Exit;
+          end
+          else
+            break;
+        end
+        else
+        begin
+          MessageBox(self.Handle, 'Should not happen!', 'Warning', MB_OK or MB_ICONINFORMATION);
         end;
-      until false;
+      until False;
       GGame.Turn := WHITE;
     end;
   end;
@@ -305,7 +325,7 @@ procedure TFormMain.MenuGame_NewGameClick(Sender: TObject);
 begin
   GGame.NewGame;
   GGame.Refresh;
-  MenuGame_CloseGame.Enabled := true;
+  MenuGame_CloseGame.Enabled := True;
   MenuGame_NewGame.Enabled := False;
 end;
 
@@ -316,7 +336,7 @@ end;
 
 procedure TFormMain.MenuGame_CloseGameClick(Sender: TObject);
 begin
-  if MessageBox(Self.Handle, 'Game is running, confirm to exit?', 'Confirm', MB_OKCANCEL or MB_DEFBUTTON2) = IDOK then
+  if MessageBox(self.Handle, 'Game is running, confirm to exit?', 'Confirm', MB_OKCANCEL or MB_DEFBUTTON2) = IDOK then
   begin
     GGame.CloseGame;
     MenuGame_NewGame.Enabled := True;
